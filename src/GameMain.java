@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowListener;
 import java.util.*;
 /** Main class for the inverted pendulum game. Creates window with game board, time remaining, start button, and sliders for time and gravity. */
 public class GameMain {
@@ -24,7 +25,6 @@ public class GameMain {
 
         JButton startButton = new JButton("Start");
         startButton.setFont(startButton.getFont().deriveFont(20.0f));
-        //frame.add(startButton, BorderLayout.SOUTH);
 
         JSlider gravitySlider = new JSlider(JSlider.VERTICAL, 1, 50, game.getGravity());
         addSliderLabels(gravitySlider, "Low", "High");
@@ -35,7 +35,13 @@ public class GameMain {
         frame.add(makeSliderPanel(timeSlider, "Phase duration"), BorderLayout.WEST);
 
         JSlider positionSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
-        JComponent temp = stackComponents(makeSliderPanel(positionSlider, "Position"), startButton);
+        JComponent posSliderPanel = makeSliderPanel(positionSlider, "Position");
+        JPanel posSliderBorder = new JPanel();
+        posSliderBorder.setLayout(new BoxLayout(posSliderBorder, BoxLayout.LINE_AXIS));
+        posSliderBorder.add(Box.createRigidArea(new Dimension(156, 0)));
+        posSliderBorder.add(posSliderPanel);
+        posSliderBorder.add(Box.createRigidArea(new Dimension(163, 0)));
+        JComponent temp = stackComponents(posSliderBorder, startButton);
         frame.add(temp, BorderLayout.SOUTH);
         // ADD VELOCITY / ACCELERATION / JERK HERE
 
@@ -45,11 +51,7 @@ public class GameMain {
         game.addPropertyChangeListener("GameTime", e -> {timeLabel.setText("Time remaining: " + (game.timeRemaining() / 1000.0) + " s");}); //POSSIBLY BETTER MORE EFFICIENT WAY OF DOING THIS
         gravitySlider.addChangeListener(e -> {game.setGravity(gravitySlider.getValue());});
         timeSlider.addChangeListener(e -> {game.setPhaseDuration(timeSlider.getValue());});
-        /*frame.addWindowListener(new WindowAdapter(){ //Helps with game cleanup when done
-            public void windowClosed(WindowEvent e){
-                game.stopGame();
-            }
-        });*/ 
+        positionSlider.addChangeListener(e -> {game.setPosition(positionSlider.getValue());});
 
         frame.pack();
         frame.setVisible(true);
