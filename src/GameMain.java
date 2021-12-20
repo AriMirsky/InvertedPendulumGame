@@ -24,7 +24,7 @@ public class GameMain {
 
         JButton startButton = new JButton("Start");
         startButton.setFont(startButton.getFont().deriveFont(20.0f));
-        frame.add(startButton, BorderLayout.SOUTH);
+        //frame.add(startButton, BorderLayout.SOUTH);
 
         JSlider gravitySlider = new JSlider(JSlider.VERTICAL, 1, 50, game.getGravity());
         addSliderLabels(gravitySlider, "Low", "High");
@@ -35,7 +35,8 @@ public class GameMain {
         frame.add(makeSliderPanel(timeSlider, "Phase duration"), BorderLayout.WEST);
 
         JSlider positionSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
-        frame.add(makeSliderPanel(positionSlider, "Position"), BorderLayout.SOUTH);
+        JComponent temp = stackComponents(makeSliderPanel(positionSlider, "Position"), startButton);
+        frame.add(temp, BorderLayout.SOUTH);
         // ADD VELOCITY / ACCELERATION / JERK HERE
 
 
@@ -78,6 +79,17 @@ public class GameMain {
         panel.add(label);
 
         panel.add(slider);
+
+        return panel;
+    }
+
+    private static JComponent stackComponents(JComponent top, JComponent bottom){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        top.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bottom.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(top);
+        panel.add(bottom);
 
         return panel;
     }
