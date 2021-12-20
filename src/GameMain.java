@@ -42,7 +42,7 @@ public class GameMain {
 
         startButton.addActionListener(e -> {game.startGame();});
         game.addPropertyChangeListener("GamePhase", e -> {phaseLabel.setText("Current phase: " + game.getPhase());});
-        game.addPropertyChangeListener("GameTime", e -> {timeLabel.setText("Time remaining: " + game.timeRemaining());}); //POSSIBLY BETTER MORE EFFICIENT WAY OF DOING THIS
+        game.addPropertyChangeListener("GameTime", e -> {timeLabel.setText("Time remaining: " + (game.timeRemaining() / 1000.0) + " s");}); //POSSIBLY BETTER MORE EFFICIENT WAY OF DOING THIS
         gravitySlider.addChangeListener(e -> {game.setGravity(gravitySlider.getValue());});
         timeSlider.addChangeListener(e -> {game.setPhaseDuration(timeSlider.getValue());});
         /*frame.addWindowListener(new WindowAdapter(){ //Helps with game cleanup when done
