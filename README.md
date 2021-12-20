@@ -4,7 +4,7 @@ Game that involves balancing an inverted pendulum.
 
 ## Usage
 
-Run the ____ file to run the game. The game has four stages, the position of the pendulum, the velocity, acceleration, and jerk. Beat all four and you win!
+Run the App.java file to run the game. The game has four stages, the position of the pendulum, the velocity, acceleration, and jerk. Beat all four and you win!
 
 ## Getting Started
 
