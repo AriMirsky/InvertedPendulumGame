@@ -3,9 +3,7 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Random;
 import java.awt.event.ActionEvent;
-import javax.swing.*;
 
 /** GUI componenet for inverted pendulum game. Maintains and visualizes game state and response to mouse inputs. Allows programmatic control of game settings and property access to game state. */
 public class GameComponent extends JPanel{
@@ -16,7 +14,7 @@ public class GameComponent extends JPanel{
     private int gravity;
 
     /** Length of the pendulum. */
-    private final int length = 10;
+    private final int length = 100;
 
     /** Encapsulates state of pendulum. */
     private Pendulum pendulum = new Pendulum();
@@ -53,6 +51,7 @@ public class GameComponent extends JPanel{
         timer.restart();
         phase = Phase.POSITION;
         repaint();
+        mainGameLoop();
     }
 
     /** Stop current game. Takes effect immediately (triggers a repain request). All background tasks are cancelled when game is stopped. */
@@ -124,11 +123,14 @@ public class GameComponent extends JPanel{
 
     /** Represents the pendulum the game is based on. Maintains current angle and whether it is currently horizontal. Able to update itself according to physics and paint itself. */
     private class Pendulum{
+        /** The width of the pendulum when drawn to the screen. */
+        int width;
+
         /** The horizontal position of pivot of the pendulum. */
         int x;
 
         /** The vertical position of the pivot of the pendulum. */
-        int y = 100;
+        int y = 200;
 
         /** The angle between the pendulum and the vertical. */
         double theta;
@@ -144,7 +146,7 @@ public class GameComponent extends JPanel{
 
         /** Simulate the physics of the pendulum after a `timeElapsed` [ms] amount of time. */
         public void step(int timeElapsed){
-            thetaDoubleDot = gravity / length * Math.sin(theta); //ADD USER CONTROL
+            thetaDoubleDot = ((double)gravity) / length * Math.sin(theta); //ADD USER CONTROL
             thetaDot += thetaDoubleDot * timeElapsed / 1000;
             theta += thetaDot * timeElapsed / 1000;
             testHorizontal();
@@ -152,7 +154,7 @@ public class GameComponent extends JPanel{
 
         /** If the pendulum is horizontal, stop the game and notify everything which should know. */
         private void testHorizontal(){
-            if(Math.abs(theta) > Math.PI){
+            if(Math.abs(theta) > (Math.PI/2)){
                 theta = Math.copySign(Math.PI, theta);
                 horizontal = true;
                 stopGame();
@@ -162,15 +164,51 @@ public class GameComponent extends JPanel{
         /** Draws the pendulum on the object `g`. */
         public void paintPendulum(Graphics g){
             g.setColor(Color.BLUE);
-            g.drawLine(x, y, x+(int)(length * Math.sin(theta)), y+(int)(length * Math.cos(theta)));
+            double cosTheta = Math.cos(theta);
+            double sinTheta = Math.sin(theta);
+            double width2 = width / 2;
+            int[] pointsX = {(int)(x + cosTheta * width2), (int)(x - cosTheta * width2), (int)(x + sinTheta * length - cosTheta * width2), (int)(x + sinTheta * length + cosTheta * width2)};
+            int[] pointsY = {(int)(y + sinTheta * width2), (int) (y - sinTheta * width2), (int) (y - cosTheta * length - sinTheta * width2), (int) (y - cosTheta * length + sinTheta * width2)};
+            g.fillPolygon(pointsX, pointsY, 4);
         }
 
         /** Creates a pendulum with default parameters. */
         public Pendulum(){
-            theta = 0.01;
+            theta = 0.1;
             thetaDot = 0;
             thetaDoubleDot = 0;
-            x = 100; //ADD USER INTERACTION
+            x = 240;
+            width = 20; //ADD BETTER LOCATION
         }
+    }
+
+    /** Main loop for the game. Periodically updates the pendulum, and is responsible for changing the current user interaction method based on phase. */
+    private void mainGameLoop(){
+        Thread mainThread = new Thread(() -> {while(phase != Phase.WINNER && phase != Phase.LOSER){
+            pendulum.step(1000 / 60);
+            System.out.println(pendulum.thetaDoubleDot);
+            repaint();
+            try {
+                Thread.sleep(1000 / 60);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }});
+        mainThread.start();
+        Thread killThread = new Thread(() -> { //DOESN'T CURRENTLY WORK
+            try {
+                mainThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Calculation thread stopped.");
+            System.exit(1);
+        });
+        killThread.start();
+    }
+
+    /** Changes the position of the pivot of the pendulum and updates pendulum accordingly. */
+    public void setPosition(int newPosition){
+        pendulum.x = newPosition;
     }
 }
