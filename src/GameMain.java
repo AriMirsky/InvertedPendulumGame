@@ -34,7 +34,7 @@ public class GameMain {
         addSliderLabels(timeSlider, "Fast", "Slow");
         frame.add(makeSliderPanel(timeSlider, "Phase duration"), BorderLayout.WEST);
 
-        JSlider positionSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+        JSlider positionSlider = new JSlider(JSlider.HORIZONTAL, 0, 480, 240);
         JComponent posSliderPanel = makeSliderPanel(positionSlider, "Position");
         JPanel posSliderBorder = new JPanel();
         posSliderBorder.setLayout(new BoxLayout(posSliderBorder, BoxLayout.LINE_AXIS));
