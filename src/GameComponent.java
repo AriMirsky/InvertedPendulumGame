@@ -124,13 +124,25 @@ public class GameComponent extends JPanel{
 
     /** Represents the pendulum the game is based on. Maintains current angle and whether it is currently horizontal. Able to update itself according to physics and paint itself. */
     private class Pendulum{
+        /** The horizontal position of pivot of the pendulum. */
         int x;
+
+        /** The vertical position of the pivot of the pendulum. */
         int y = 100;
+
+        /** The angle between the pendulum and the vertical. */
         double theta;
+
+        /** The rate of change of theta. */
         double thetaDot;
+
+        /** The rate of change of thetaDot. */
         double thetaDoubleDot;
+
+        /** Whether the pendulum is horizontal. If it is, the game is over. */
         boolean horizontal = false;
 
+        /** Simulate the physics of the pendulum after a `timeElapsed` [ms] amount of time. */
         public void step(int timeElapsed){
             thetaDoubleDot = gravity / length * Math.sin(theta); //ADD USER CONTROL
             thetaDot += thetaDoubleDot * timeElapsed / 1000;
@@ -138,6 +150,7 @@ public class GameComponent extends JPanel{
             testHorizontal();
         }
 
+        /** If the pendulum is horizontal, stop the game and notify everything which should know. */
         private void testHorizontal(){
             if(Math.abs(theta) > Math.PI){
                 theta = Math.copySign(Math.PI, theta);
@@ -146,11 +159,13 @@ public class GameComponent extends JPanel{
             }
         }
 
+        /** Draws the pendulum on the object `g`. */
         public void paintPendulum(Graphics g){
             g.setColor(Color.BLUE);
             g.drawLine(x, y, x+(int)(length * Math.sin(theta)), y+(int)(length * Math.cos(theta)));
         }
 
+        /** Creates a pendulum with default parameters. */
         public Pendulum(){
             theta = 0.01;
             thetaDot = 0;

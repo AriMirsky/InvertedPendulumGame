@@ -83,6 +83,7 @@ public class GameMain {
         return panel;
     }
 
+    /** Returns a component with `top` on top of `bottom`, both center aligned. */
     private static JComponent stackComponents(JComponent top, JComponent bottom){
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
