@@ -26,7 +26,7 @@ public class GameMain {
         JButton startButton = new JButton("Start");
         startButton.setFont(startButton.getFont().deriveFont(20.0f));
 
-        JSlider gravitySlider = new JSlider(JSlider.VERTICAL, 1, 50, game.getGravity());
+        JSlider gravitySlider = new JSlider(JSlider.VERTICAL, 1, 1000, game.getGravity());
         addSliderLabels(gravitySlider, "Low", "High");
         frame.add(makeSliderPanel(gravitySlider, "Gravity strength"), BorderLayout.EAST);
 

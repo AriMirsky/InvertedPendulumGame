@@ -40,7 +40,7 @@ public class GameComponent extends JPanel{
 
         phase = Phase.NOTSTARTED;
 
-        gravity = 10;
+        gravity = 100;
 
         setPreferredSize(new Dimension(480, 360));
     }
@@ -144,12 +144,25 @@ public class GameComponent extends JPanel{
         /** Whether the pendulum is horizontal. If it is, the game is over. */
         boolean horizontal = false;
 
+        int xUsed;
+
+        int xPrev;
+
+        double xDot;
+
+        double xDoubleDot;
+
         /** Simulate the physics of the pendulum after a `timeElapsed` [ms] amount of time. */
         public void step(int timeElapsed){
-            thetaDoubleDot = ((double)gravity) / length * Math.sin(theta); //ADD USER CONTROL
+            thetaDoubleDot = ((double)gravity) / length * Math.sin(theta) + xDoubleDot * Math.cos(theta) / length;
             thetaDot += thetaDoubleDot * timeElapsed / 1000;
             theta += thetaDot * timeElapsed / 1000;
+            xDoubleDot = ((xUsed - xPrev) / timeElapsed - xDot)/timeElapsed * 500;
+            xDot = xUsed - xPrev;
+            xPrev = xUsed;
+            xUsed = x;
             testHorizontal();
+            firePropertyChange("GameTime", 0, 0);
         }
 
         /** If the pendulum is horizontal, stop the game and notify everything which should know. */
@@ -178,6 +191,8 @@ public class GameComponent extends JPanel{
             thetaDot = 0;
             thetaDoubleDot = 0;
             x = 240;
+            xUsed = x;
+            xPrev = x;
             width = 20; //ADD BETTER LOCATION
         }
     }
@@ -186,7 +201,7 @@ public class GameComponent extends JPanel{
     private void mainGameLoop(){
         Thread mainThread = new Thread(() -> {while(phase != Phase.WINNER && phase != Phase.LOSER){
             pendulum.step(1000 / 60);
-            System.out.println(pendulum.thetaDoubleDot);
+            //System.out.println(pendulum.thetaDoubleDot);
             repaint();
             try {
                 Thread.sleep(1000 / 60);
