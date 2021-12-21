@@ -20,13 +20,12 @@ public class GameMain {
 
         JLabel phaseLabel = new JLabel("Current phase: " + game.getPhase(), SwingConstants.CENTER);
         JLabel timeLabel = new JLabel("Time remaining: " + game.timeRemaining(), SwingConstants.CENTER);
-        frame.add(phaseLabel, BorderLayout.NORTH);
-        frame.add(timeLabel, BorderLayout.NORTH);
+        frame.add(stackComponents(phaseLabel, timeLabel), BorderLayout.NORTH);
 
         JButton startButton = new JButton("Start");
         startButton.setFont(startButton.getFont().deriveFont(20.0f));
 
-        JSlider gravitySlider = new JSlider(JSlider.VERTICAL, 1, 1000, game.getGravity());
+        JSlider gravitySlider = new JSlider(JSlider.VERTICAL, 1, 500, game.getGravity());
         addSliderLabels(gravitySlider, "Low", "High");
         frame.add(makeSliderPanel(gravitySlider, "Gravity strength"), BorderLayout.EAST);
 

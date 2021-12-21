@@ -14,7 +14,7 @@ public class GameComponent extends JPanel{
     private int gravity;
 
     /** Length of the pendulum. */
-    private final int length = 100;
+    private final int length = 200;
 
     /** Encapsulates state of pendulum. */
     private Pendulum pendulum = new Pendulum();
@@ -30,6 +30,9 @@ public class GameComponent extends JPanel{
 
     /** Current phase of the game. */
     private Phase phase;
+
+    /** Time remaining in phase, stored after a timeRemaining call to properly put arguments in property change firing. */
+    private int oldTimeRemaining;
 
     /** Construct a new GameComponent with default settings. */
     public GameComponent(){
@@ -50,6 +53,7 @@ public class GameComponent extends JPanel{
         isActive = true;
         timer.restart();
         phase = Phase.POSITION;
+        firePropertyChange("GamePhase", Phase.NOTSTARTED, phase);
         repaint();
         mainGameLoop();
     }
@@ -85,7 +89,8 @@ public class GameComponent extends JPanel{
 
     /** Returns the current time remaining in the phase [ms]. */
     public int timeRemaining(){
-        return phaseDuration - (int)(System.currentTimeMillis() - timerStartTime);
+        oldTimeRemaining = phaseDuration - (int)(System.currentTimeMillis() - timerStartTime);
+        return oldTimeRemaining;
     }
 
     /** Returns the length of each phase [ms]. */
@@ -130,7 +135,7 @@ public class GameComponent extends JPanel{
         int x;
 
         /** The vertical position of the pivot of the pendulum. */
-        int y = 200;
+        int y = 360;
 
         /** The angle between the pendulum and the vertical. */
         double theta;
@@ -162,7 +167,7 @@ public class GameComponent extends JPanel{
             xPrev = xUsed;
             xUsed = x;
             testHorizontal();
-            firePropertyChange("GameTime", 0, 0);
+            firePropertyChange("GameTime", oldTimeRemaining, timeRemaining());
         }
 
         /** If the pendulum is horizontal, stop the game and notify everything which should know. */
@@ -170,6 +175,7 @@ public class GameComponent extends JPanel{
             if(Math.abs(theta) > (Math.PI/2)){
                 theta = Math.copySign(Math.PI, theta);
                 horizontal = true;
+                repaint();
                 stopGame();
             }
         }
@@ -193,7 +199,7 @@ public class GameComponent extends JPanel{
             x = 240;
             xUsed = x;
             xPrev = x;
-            width = 20; //ADD BETTER LOCATION
+            width = 5; //ADD BETTER LOCATION
         }
     }
 
